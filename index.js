@@ -214,9 +214,8 @@ S3Storage.prototype._handleFile = function (req, file, cb) {
       if (ev.total) currentSize = ev.total
     })
 
-    util.callbackify(upload.done.bind(upload))(function (err, result) {
-      if (err) return cb(err)
-
+    upload.promise()
+    .then(function (result) {
       cb(null, {
         size: currentSize,
         bucket: opts.bucket,
@@ -233,6 +232,8 @@ S3Storage.prototype._handleFile = function (req, file, cb) {
         versionId: result.VersionId
       })
     })
+    .catch(cb);
+
   })
 }
 
